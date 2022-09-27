@@ -5,8 +5,6 @@ use std::fs::{create_dir_all, File};
 use std::io::prelude::*;
 use std::path::Path;
 
-mod adapter;
-
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -91,13 +89,14 @@ fn main() -> std::io::Result<()> {
             let config_dir = Path::new(".circleci");
             create_dir_all(config_dir).expect("create config_dir");
             let config_file = Path::new(".circleci/config.yml");
-            let fd = File::create(config_file)?;
-            let mut fmt = adapter::FmtIoWriter::new(fd);
+            let mut fd = File::create(config_file)?;
+            // let mut fmt = adapter::FmtIoWriter::new(fd);
             for component in components {
                 // fd.write_fmt(format_args!("config for {:#?}", component))?;
                 // handlebars.render_to_write("template", &(), &mut fd).unwrap();
                 let cc = CircleCI {};
-                cc.render_into(&mut fmt).expect("could render");
+                // cc.render_into(&mut fmt).expect("could render");
+                write!(fd, "{cc}")?;
             }
         }
     }
