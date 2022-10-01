@@ -2,3 +2,6 @@ See https://club.black.co.at/log/posts/2022-09-26-unversal-pipeline-compiler/ind
 
 Other resources:
 * https://github.com/japaric/trust: Travis CI and AppVeyor template to test your Rust crate on 5 architectures and publish binary releases of it for Linux, macOS and Windows
+* https://docs.gitlab.com/ee/ci/
+* https://docs.github.com/en/actions/quickstart
+* https://circleci.com/docs/configuration-reference

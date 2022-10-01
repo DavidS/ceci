@@ -5,10 +5,17 @@ use std::fs::{create_dir_all, File};
 use std::io::prelude::*;
 use std::path::Path;
 
+use crate::data::*;
+
+mod data;
+
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
+    /// Select which CI system to target.
+    #[clap(short, long, value_parser)]
+    target: Target,
     // /// Name of the person to greet
     // #[clap(short, long, value_parser)]
     // name: String,
@@ -28,16 +35,6 @@ enum Commands {
         // #[clap(short, long, action)]
         // list: bool,
     },
-}
-
-#[derive(Debug)]
-enum Components {
-    Cargo,
-}
-
-#[derive(Debug)]
-enum Target {
-    CircleCI,
 }
 
 #[derive(Template)]
@@ -71,20 +68,20 @@ fn main() -> std::io::Result<()> {
 
     // discover components
 
-    let mut components: Vec<Components> = vec![];
+    let mut components: Vec<Ecosystem> = vec![];
 
     let path = Path::new("Cargo.toml");
     if path.exists() {
-        components.push(Components::Cargo);
+        components.push(Ecosystem::Cargo);
     }
 
     // for each component:
     //   add config overrides
 
     // render pipeline config
-    let target = Target::CircleCI;
+    // let target = Target::CircleCI;
 
-    match target {
+    match args.target {
         Target::CircleCI => {
             let config_dir = Path::new(".circleci");
             create_dir_all(config_dir).expect("create config_dir");
@@ -99,6 +96,8 @@ fn main() -> std::io::Result<()> {
                 write!(fd, "{cc}")?;
             }
         }
+        Target::GitHubActions => todo!(),
+        Target::GitLabCI => todo!(),
     }
 
     Ok(())
