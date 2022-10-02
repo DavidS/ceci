@@ -1,6 +1,5 @@
 use askama::Template;
 use clap::{Parser, Subcommand};
-use dialoguer::Select;
 use std::fs::{create_dir_all, File};
 use std::io::prelude::*;
 use std::path::Path;
@@ -11,10 +10,10 @@ mod data;
 
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
-#[clap(author, version, about, long_about = None)]
-struct Args {
+#[command(author, version, about, long_about = None)]
+struct Cli {
     /// Select which CI system to target.
-    #[clap(short, long, value_parser)]
+    #[arg(short, long)]
     target: Target,
     // /// Name of the person to greet
     // #[clap(short, long, value_parser)]
@@ -41,7 +40,7 @@ enum Commands {
 #[template(path = "circleci/default.yml")]
 struct CircleCI {}
 fn main() -> std::io::Result<()> {
-    let args = Args::parse();
+    let args = Cli::parse();
 
     // let items = vec!["Option 1", "Option 2"];
     // let chosen = Select::new()
@@ -106,5 +105,5 @@ fn main() -> std::io::Result<()> {
 #[test]
 fn verify_args() {
     use clap::CommandFactory;
-    Args::command().debug_assert()
+    Cli::command().debug_assert()
 }

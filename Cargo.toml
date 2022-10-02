@@ -7,5 +7,4 @@ version = "0.1.0"
 
 [dependencies]
 askama = "0.11.1"
-clap = {version = "3.2.22", features = ["derive"]}
-dialoguer = "0.10.2"
+clap = {version = "4.0", features = ["derive", "deprecated"]}
