@@ -32,9 +32,27 @@ pub struct Job {
 lazy_static! {
     pub static ref CC_TEST: Job = Job {
         ecosystem: Ecosystem::Cargo,
-        steps: vec![Command {
-            title: "install protoc".to_string(),
-            command: "sudo apt install -y protobuf-compiler".to_string(),
-        }],
+        steps: vec![
+            // checkout
+            Command {
+                title: "install protoc".to_string(),
+                command: "sudo apt install -y protobuf-compiler".to_string(),
+            },
+            // restore cache
+            Command {
+                title: "cargo check".to_string(),
+                command: "cargo check --workspace".to_string(),
+            },
+            Command {
+                title: "cargo test".to_string(),
+                command: "cargo test --workspace --doc".to_string(),
+            },
+            Command {
+                title: "cargo build".to_string(),
+                command: "cargo build --workspace --release".to_string(),
+            },
+            // export artifacts
+            // save cache
+        ],
     };
 }
