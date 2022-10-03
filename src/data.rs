@@ -1,4 +1,5 @@
 use clap::ValueEnum;
+use lazy_static::lazy_static;
 
 /// This enum lists all detectable tool/language ecosystems.
 #[derive(Debug, Clone, ValueEnum)]
@@ -28,10 +29,12 @@ pub struct Job {
     steps: Vec<Command>,
 }
 
-const CC_TEST: Job = Job {
-    ecosystem: Ecosystem::Cargo,
-    steps: vec![Command {
-        title: "install protoc".to_string(),
-        command: "sudo apt install -y protobuf-compiler".to_string(),
-    }],
-};
+lazy_static! {
+    pub static ref CC_TEST: Job = Job {
+        ecosystem: Ecosystem::Cargo,
+        steps: vec![Command {
+            title: "install protoc".to_string(),
+            command: "sudo apt install -y protobuf-compiler".to_string(),
+        }],
+    };
+}

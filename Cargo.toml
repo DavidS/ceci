@@ -8,3 +8,4 @@ version = "0.1.0"
 [dependencies]
 askama = "0.11.1"
 clap = {version = "4.0", features = ["derive", "deprecated"]}
+lazy_static = "1.4.0"
