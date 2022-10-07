@@ -18,26 +18,37 @@ pub enum Target {
 }
 
 /// A shell command to execute somewhere.
+#[derive(Clone)]
 pub struct Command {
-    title: String,
-    command: String,
+    pub title: String,
+    pub command: String,
 }
 
 /// A Job contains a bunch of Commands to run in sequence.
+#[derive(Clone)]
 pub struct Job {
-    ecosystem: Ecosystem,
-    steps: Vec<Command>,
+    pub ecosystem: Ecosystem,
+    pub steps: Vec<Command>,
 }
 
 lazy_static! {
+    pub static ref INSTALL_OTEL_CLI: Command = Command {
+        title: "install otel-cli".into(),
+        command: "curl -L https://github.com/equinix-labs/otel-cli/releases/download/v0.0.20/otel-cli-0.0.20-Linux-x86_64.tar.gz | sudo tar xvzf - -C /usr/local/bin".into(),
+    };
     pub static ref CC_TEST: Job = Job {
         ecosystem: Ecosystem::Cargo,
         steps: vec![
-            // checkout
+            Command {
+                title: "configure traceparent".into(),
+                command: "if [ -n \"$HOOK_URL\"]; then curl \"${HOOK_URL}/traceparent/${CIRCLE_WORKFLOW_ID}/${CIRCLE_WORKFLOW_JOB_ID}\" >> \"$BASH_ENV\"; fi".into(),
+            },
+            INSTALL_OTEL_CLI.clone(),
             Command {
                 title: "install protoc".to_string(),
-                command: "sudo apt install -y protobuf-compiler".to_string(),
+                command: "sudo apt update && sudo apt install -y protobuf-compiler".to_string(),
             },
+            // checkout
             // restore cache
             Command {
                 title: "cargo check".to_string(),
@@ -56,3 +67,9 @@ lazy_static! {
         ],
     };
 }
+
+// #[derive(Debug, Serialize)]
+// pub struct CciYml {
+//     pub version: String,
+//     pub jobs: Value,
+// }

@@ -6,19 +6,11 @@ jobs:
     docker:
       - image: cimg/rust:1.63.0
     steps:
+{%- for command in job.steps %}
       - run:
-          name: configure traceparent
-          command: curl "${HOOK_URL}/traceparent/${CIRCLE_WORKFLOW_ID}/${CIRCLE_WORKFLOW_JOB_ID}" >> "$BASH_ENV"
-      - run:
-          name: install otel-cli
-          command: |
-            curl -L https://github.com/equinix-labs/otel-cli/releases/download/v0.0.20/otel-cli-0.0.20-Linux-x86_64.tar.gz | sudo tar xvzf - -C /usr/local/bin
-
-      - run:
-          name: install protoc
-          command: |
-            sudo apt update
-            sudo apt install -y protobuf-compiler
+          name: {{command.title}}
+          command: {{command.command}}
+{% endfor %}
 
       - checkout
 

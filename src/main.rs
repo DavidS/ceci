@@ -38,8 +38,11 @@ enum Commands {
 
 #[derive(Template)]
 #[template(path = "circleci/default.yml")]
-struct CircleCI {}
-fn main() -> std::io::Result<()> {
+struct CircleCI {
+    job: Job,
+}
+
+fn main() -> anyhow::Result<()> {
     let args = Cli::parse();
 
     // let items = vec!["Option 1", "Option 2"];
@@ -85,15 +88,24 @@ fn main() -> std::io::Result<()> {
             let config_dir = Path::new(".circleci");
             create_dir_all(config_dir).expect("create config_dir");
             let config_file = Path::new(".circleci/config.yml");
+
+            // let input = File::open(config_file)?;
+            // let object: Value = serde_yaml::from_reader(input)?;
+            // println!("{object:#?}");
+
             let mut fd = File::create(config_file)?;
             // let mut fmt = adapter::FmtIoWriter::new(fd);
             for component in components {
-                // fd.write_fmt(format_args!("config for {:#?}", component))?;
-                // handlebars.render_to_write("template", &(), &mut fd).unwrap();
-                let cc = CircleCI {};
-                // cc.render_into(&mut fmt).expect("could render");
+                let cc = CircleCI { job: CC_TEST.clone() };
                 write!(fd, "{cc}")?;
             }
+            // serde_yaml::to_writer(
+            //     fd,
+            //     &CciYml {
+            //         version: "2.1".to_string(),
+            //         jobs: Value::Bool(true),
+            //     },
+            // )?;
         }
         Target::GitHubActions => todo!(),
         Target::GitLabCI => todo!(),
