@@ -18,6 +18,8 @@ jobs:
           name: install protoc
           command: sudo apt update && sudo apt install -y protobuf-compiler
 
+      - checkout
+
       - run:
           name: cargo check
           command: cargo check --workspace
@@ -30,8 +32,6 @@ jobs:
           name: cargo build
           command: cargo build --workspace --release
 
-
-      - checkout
 
       - restore_cache:
           key: cargo-{{ checksum "Cargo.lock" }}
