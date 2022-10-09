@@ -42,6 +42,15 @@ pub enum Command {
     },
 }
 
+pub struct CommandBuilder;
+
+impl CommandBuilder {
+    pub fn shell(title: &str, command: &str) -> Command {
+        Command::Shell {
+            title: title.into(),
+            command: command.into(),
+        }
+    }
 }
 
 /// A Job contains a bunch of Commands to run in sequence.
@@ -64,10 +73,10 @@ lazy_static! {
                 command: "if [ -n \"$HOOK_URL\"]; then curl \"${HOOK_URL}/traceparent/${CIRCLE_WORKFLOW_ID}/${CIRCLE_WORKFLOW_JOB_ID}\" >> \"$BASH_ENV\"; fi".into(),
             },
             INSTALL_OTEL_CLI.clone(),
-            Command::Shell {
-                title: "install protoc".to_string(),
-                command: "sudo apt update && sudo apt install -y protobuf-compiler".to_string(),
-            },
+            CommandBuilder::shell(
+                "install protoc",
+                "sudo apt update && sudo apt install -y protobuf-compiler"
+            ),
             // checkout
             Command::Checkout,
             // restore cache
