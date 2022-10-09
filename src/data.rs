@@ -36,6 +36,9 @@ pub enum Command {
         key_files: Vec<String>,
         data_paths: Vec<String>,
     },
+    StoreTestResults {
+        paths: Vec<String>,
+    },
     Shell {
         title: String,
         command: String,
@@ -92,6 +95,10 @@ lazy_static! {
             Command::Shell {
                 title: "cargo build".to_string(),
                 command: "cargo build --workspace --release".to_string(),
+            },
+            // grab/upload test results
+            Command::StoreTestResults {
+                paths: vec!["fixed-report.xml".to_string()],
             },
             // export artifacts
             // save cache

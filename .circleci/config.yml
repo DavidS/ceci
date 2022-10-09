@@ -36,6 +36,9 @@ jobs:
           name: cargo build
           command: cargo build --workspace --release
 
+      - store_test_results:
+          path: fixed-report.xml
+
       - save_cache:
           keys:
             - Cargo-{{ checksum "Cargo.lock" }}- Cargo

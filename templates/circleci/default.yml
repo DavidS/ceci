@@ -32,6 +32,11 @@ jobs:
 {%- for data_path in data_paths -%}
             - {{data_path}}
 {%- endfor %}
+{% when Command::StoreTestResults { paths } %}
+{%- for path in paths %}
+      - store_test_results:
+          path: {{path}}
+{%- endfor %}
 {% else %}
       WOOPS: unmatched command
 {% endmatch -%}
