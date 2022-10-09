@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use clap::ValueEnum;
 use lazy_static::lazy_static;
 
@@ -7,6 +9,12 @@ pub enum Ecosystem {
     Bundler,
     Cargo,
     Pip,
+}
+
+impl Display for Ecosystem {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
 }
 
 /// This enum lists all supported CI Pipeline configuration targets.
@@ -20,8 +28,20 @@ pub enum Target {
 /// A shell command to execute somewhere.
 #[derive(Clone)]
 pub enum Command {
-    Shell { title: String, command: String },
     Checkout,
+    RestoreCache {
+        key_files: Vec<String>,
+    },
+    StoreCache {
+        key_files: Vec<String>,
+        data_paths: Vec<String>,
+    },
+    Shell {
+        title: String,
+        command: String,
+    },
+}
+
 }
 
 /// A Job contains a bunch of Commands to run in sequence.
@@ -51,6 +71,7 @@ lazy_static! {
             // checkout
             Command::Checkout,
             // restore cache
+            Command::RestoreCache { key_files: vec!["Cargo.lock".to_string()]},
             Command::Shell {
                 title: "cargo check".to_string(),
                 command: "cargo check --workspace".to_string(),
@@ -65,6 +86,13 @@ lazy_static! {
             },
             // export artifacts
             // save cache
+            Command::StoreCache {
+                key_files: vec!["Cargo.lock".to_string()],
+                data_paths: vec![
+                    "~/.cargo".to_string(),
+                    "target".to_string()
+                ]
+            },
         ],
     };
 }

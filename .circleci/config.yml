@@ -20,6 +20,10 @@ jobs:
 
       - checkout
 
+      - restore_cache:
+          keys:
+            - Cargo-{{ checksum "Cargo.lock" }}- Cargo
+
       - run:
           name: cargo check
           command: cargo check --workspace
@@ -32,9 +36,11 @@ jobs:
           name: cargo build
           command: cargo build --workspace --release
 
+      - save_cache:
+          keys:
+            - Cargo-{{ checksum "Cargo.lock" }}- Cargo
+          paths:- ~/.cargo- target
 
-      - restore_cache:
-          key: cargo-{{ checksum "Cargo.lock" }}
 
       - run: otel-cli exec --service cargo --name "cargo check" -- cargo check --workspace
 
@@ -54,9 +60,3 @@ jobs:
           command: cat target/nextest/ci/junit.xml | circleci-junit-fix > fixed-report.xml
       - store_test_results:
           path: fixed-report.xml
-
-      - save_cache:
-          key: cargo-{{ checksum "Cargo.lock" }}
-          paths:
-            - ~/.cargo
-            - target

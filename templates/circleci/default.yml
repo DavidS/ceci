@@ -12,13 +12,30 @@ jobs:
       - run:
           name: {{title}}
           command: {{command}}
-{% when Checkout %}
+{% when Command::Checkout %}
       - checkout
+{% when Command::RestoreCache { key_files } %}
+      - restore_cache:
+          keys:
+            - {{job.ecosystem}}{%- for file in key_files -%}
+            -{{ "{{ checksum \""}}{{file}}{{"\" }}" }}
+            {%- endfor -%}
+            - {{job.ecosystem}}
+{% when Command::StoreCache { key_files, data_paths } %}
+      - save_cache:
+          keys:
+            - {{job.ecosystem}}{%- for file in key_files -%}
+            -{{ "{{ checksum \""}}{{file}}{{"\" }}" }}
+            {%- endfor -%}
+            - {{job.ecosystem}}
+          paths:
+{%- for data_path in data_paths -%}
+            - {{data_path}}
+{%- endfor %}
+{% else %}
+      WOOPS: unmatched command
 {% endmatch -%}
 {%- endfor %}
-
-      - restore_cache:
-          key: cargo-{{ "{{ checksum \"Cargo.lock\" }}" }}
 
       - run: otel-cli exec --service cargo --name "cargo check" -- cargo check --workspace
 
@@ -38,9 +55,3 @@ jobs:
           command: cat target/nextest/ci/junit.xml | circleci-junit-fix > fixed-report.xml
       - store_test_results:
           path: fixed-report.xml
-
-      - save_cache:
-          key: cargo-{{"{{ checksum \"Cargo.lock\" }}"}}
-          paths:
-            - ~/.cargo
-            - target
